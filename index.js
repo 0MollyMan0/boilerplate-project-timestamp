@@ -30,20 +30,19 @@ app.get("/api", (req, res) => {
   res.json({ unix: now.getTime(), utc: now.toUTCString() });
 });
 
+// With params
 app.get("/api/:date?", function(req, res) {
-  const date1 = new Date(req.params.date); // Prepare the const for a UTC req
-  const date2 = new Date(Number(req.params.date)); // Prepare the const for a unix req
-  // Test if it is a UTC req
-  if (isNaN(date2.getTime())) {
-    res.json({ unix: date1.getTime(), utc: date1.toUTCString() });
+  const input = req.params.date;
+  let date = new Date(input);
+  if (!isNaN(input)) {
+    date = new Date(Number(input));
+    res.json({ unix: date.getTime(), utc: date.toUTCString() });
   }
-  // Test if it is unix req
-  else if (isNaN(date1.getTime())) {
-    res.json({ unix: date2.getTime(), utc: date2.toUTCString() });
-  }
-  // A real invalid date
-  else {
+  else if (date.toString() === "Invalid Date") {
     res.json({ error: "Invalid Date" });
+  }
+  else {
+    res.json({ unix: date.getTime(), utc: date.toUTCString() });
   }
 });
 
